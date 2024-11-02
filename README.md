@@ -19,9 +19,11 @@ The application uses a Convolutional Neural Network (CNN) based on the Inception
    git clone https://github.com/Roberttwil/Covid-Normal-Pneumonia_ClassificationUsingInceptionV3.git
 
 2. Install the required packages:
+   ```bash
    pip install -r requirements.txt
 
-3. Run on Streamlit
+4. Run on Streamlit:
+   ```bash
    streamlit run app.py
 
 ### Model Training
