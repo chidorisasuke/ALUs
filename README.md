@@ -16,7 +16,7 @@ The application uses a Convolutional Neural Network (CNN) based on the Inception
 ### Installation
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/your-repo-name.git](https://github.com/Roberttwil/Covid-Normal-Pneumonia_ClassificationUsingInceptionV3.git
+   git clone https://github.com/Roberttwil/Covid-Normal-Pneumonia_ClassificationUsingInceptionV3.git
 
 2. Install the required packages:
    pip install -r requirements.txt
