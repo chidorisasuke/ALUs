@@ -70,7 +70,7 @@ regex==2024.5.15
 requests==2.32.3
 rich==13.7.1
 rpds-py==0.18.1
-reportlab==3.6.13
+reportlab==4.2.5
 safetensors==0.4.3
 scikit-learn==1.5.0
 scipy==1.13.1
