@@ -4,7 +4,7 @@ import streamlit as st
 st.set_page_config(page_title="ALus", page_icon=":lungs:", layout="wide", initial_sidebar_state="collapsed")
 
 from home import display_home
-from model_deploy import display_diagnosis
+from deploy_model import display_diagnosis
 from about import display_about
 # from chatbot import display_chatbot
 
