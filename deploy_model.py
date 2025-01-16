@@ -1,126 +1,211 @@
 import streamlit as st
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.image import img_to_array
-import numpy as np
+from tensorflow.keras.models import load_model  # type: ignore
 from PIL import Image
+import numpy as np
+from tensorflow.keras.preprocessing.image import img_to_array  # type: ignore
+import zipfile
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
+from reportlab.lib import colors
+from reportlab.platypus import Table, TableStyle
 import io
-import zipfile
+import matplotlib.pyplot as plt
+import seaborn as sns
+import logging
+from datetime import datetime
+
+# Mengatur logging untuk debug
+logging.basicConfig(level=logging.DEBUG)
 
 # Fungsi untuk memuat model
 @st.cache_resource
-def load_inception_model():
-    model = load_model('inceptionv3_best_model.keras')
-    return model
+def load_mobilenet_model():
+    try:
+        model = load_model('inceptionv3_best_model.keras')
+        return model
+    except Exception as e:
+        st.error(f"Gagal memuat model: {str(e)}")
+        logging.error(f"Error loading model: {str(e)}")
+        return None
 
-model = load_inception_model()
+model = load_mobilenet_model()
+
+# Fungsi untuk membuat plot hasil prediksi
+def plot_prediction(image, predictions, categories):
+    fig, ax = plt.subplots(1, 2, figsize=(12, 6))
+
+    # Menampilkan gambar asli
+    ax[0].imshow(image)
+    ax[0].axis('off')
+    ax[0].set_title("Gambar Yang Diunggah", fontsize=14, weight='bold')
+
+    # Menampilkan probabilitas prediksi dengan plot horizontal
+    sns.barplot(x=predictions, y=categories, ax=ax[1], palette='coolwarm')
+    ax[1].set_xlim(0, 1)
+    ax[1].set_xlabel("Probability", fontsize=12)
+    ax[1].set_title("Hasil Diagnosa", fontsize=14, weight='bold')
+
+    plt.tight_layout()
+    st.pyplot(fig)
 
 # Fungsi untuk klasifikasi gambar
 def classify_image(image, model):
-    # Ubah ukuran gambar sesuai dengan input model
-    img = image.resize((224, 224))
-    img = img_to_array(img) / 255.0  # Normalisasi
-    img = np.expand_dims(img, axis=0)  # Tambahkan batch dimension
+    try:
+        img = image.resize((224, 224))
+        img = img_to_array(img) / 255.0
+        img = np.expand_dims(img, axis=0)
 
-    # Prediksi dengan model
-    pred = model.predict(img)
-    class_idx = np.argmax(pred, axis=1)[0]
-    categories = ['COVID', 'NORMAL' ,'PNEUMONIA']
+        pred = model.predict(img)[0]
+        categories = ['COVID-19', 'Normal', 'Pneumonia']
+        class_idx = np.argmax(pred)
+        label = categories[class_idx]
+        confidence = pred[class_idx]
 
-    # Prediksi
-    pred = model.predict(img)
-    st.write("Prediksi mentah:", pred)
-    st.write("Kategori berdasarkan urutan label:", categories)
+        return label, confidence, pred, categories
+    except Exception as e:
+        st.error(f"Error during image classification: {str(e)}")
+        logging.error(f"Error during image classification: {str(e)}")
+        return None, None, None, None
 
-    label = categories[class_idx]
-    confidence = np.max(pred)
-    return label, confidence
+# Fungsi untuk menambahkan deskripsi penyakit dan tips kesehatan pada PDF
+def add_disease_description_and_tips(c, label, y_position):
+    descriptions = {
+        "COVID-19": "COVID-19 adalah penyakit yang disebabkan oleh virus SARS-CoV-2, yang dapat menyebabkan infeksi pernapasan akut.",
+        "Pneumonia": "Pneumonia adalah infeksi paru-paru yang menyebabkan peradangan pada kantung udara, yang dapat terisi cairan atau nanah.",
+        "Normal": "Paru-paru Anda dalam kondisi normal. Tetap jaga kesehatan paru-paru Anda dengan menghindari merokok, menjaga kualitas udara, dan rutin berolahraga."
+    }
 
-# Fungsi untuk membuat PDF dengan gambar
+    tips = {
+        "COVID-19": "Kenapa COVID-19? Virus SARS-CoV-2 dapat menyebar melalui droplet dan kontak langsung. Pastikan untuk selalu memakai masker, menjaga jarak, dan mencuci tangan.",
+        "Pneumonia": "Kenapa Pneumonia? Pneumonia dapat disebabkan oleh infeksi bakteri, virus, atau jamur. Risiko meningkat pada perokok, orang dengan sistem imun lemah, atau paparan polusi udara.",
+        "Normal": "Tips: Hindari merokok, lakukan olahraga secara teratur, makan makanan bergizi, dan lakukan pemeriksaan kesehatan rutin."
+    }
+
+    if label in descriptions:
+        c.setFont("Helvetica", 10)  # Menurunkan ukuran font untuk deskripsi
+        c.drawString(40, y_position, "Deskripsi:")
+        y_position -= 20
+        text = descriptions[label]
+        c.drawString(60, y_position, text[:100])  # Memastikan dua baris pertama ditampilkan
+        y_position -= 20
+        c.drawString(60, y_position, text[100:])  # Sisa deskripsi pada baris kedua
+        y_position -= 20
+
+        c.drawString(40, y_position, "Keterangan:")
+        y_position -= 20
+        tip_text = tips[label]
+        c.drawString(60, y_position, tip_text[:100])  # Memastikan dua baris pertama tips ditampilkan
+        y_position -= 20
+        c.drawString(60, y_position, tip_text[100:])  # Sisa tips pada baris kedua
+        y_position -= 20
+
+    return y_position
+
+
+# Fungsi untuk membuat PDF dengan format medical check-up
 def create_pdf_with_images(results):
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
-    
+
+    # Header
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(40, height - 50, "Hasil Medical Check-Up With ALus Diagnosa")
     c.setFont("Helvetica", 12)
-    y_position = height - 40  # Mulai dari bagian atas halaman
+    c.drawString(40, height - 70, f"Tanggal: {datetime.now().strftime('%d-%m-%Y')}")
 
-    c.drawString(40, y_position, "Hasil Klasifikasi Gambar Paru-Paru")
-    y_position -= 20
-    c.drawString(40, y_position, "----------------------------------")
-    y_position -= 20
-    
-    for file_name, label, confidence, image in results:
-        # Tampilkan hasil klasifikasi
-        c.drawString(40, y_position, f"{file_name}: {label} ({confidence * 100:.2f}%)")
+    # Informasi Institusi
+    c.setFont("Helvetica", 10)
+    c.drawString(40, height - 100, "ALus Diagnosa")
+    c.drawString(40, height - 115, "Jl. Kesehatan No. 123, Bandung")
+    c.drawString(40, height - 130, "Telp: (021) 123-4567 | Email: info@rsxyz.co.id")
+
+    y_position = height - 160
+
+    for file_name, label, confidence, image, predictions, categories in results:
+        # Menambahkan nama file dan hasil diagnosa
+        c.setFont("Helvetica", 12)
+        c.drawString(40, y_position, f"File Yang Diunggah: {file_name}")
         y_position -= 20
-        
-        # Tambahkan gambar ke PDF
+        c.drawString(40, y_position, f"Hasil Diagnosa: {label} ({confidence * 100:.2f}%)")
+        y_position -= 20
+
+        # Menambahkan deskripsi penyakit dan tips kesehatan
+        y_position = add_disease_description_and_tips(c, label, y_position)
+
+        # Menambahkan tabel probabilitas
+        table_data = [["Kelas", "Probabilitas (%)"]] + list(zip(categories, [f"{p * 100:.2f}" for p in predictions]))
+        table = Table(table_data, colWidths=[200, 150])
+        table.setStyle(TableStyle([  
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ]))
+        table_width, table_height = table.wrap(0, 0)
+        if y_position - table_height < 100:
+            c.showPage()
+            y_position = height - 160
+        table.drawOn(c, 40, y_position - table_height)
+        y_position -= table_height + 20
+
+        # Menambahkan gambar
         img = ImageReader(image)
-        if y_position < 240:  # Jika ruang tidak cukup, buat halaman baru
+        img_width, img_height = 200, 200
+        if y_position - img_height < 100:
             c.showPage()
-            y_position = height - 40
-        c.drawImage(img, 40, y_position - 200, width=200, height=200)
-        y_position -= 220
+            y_position = height - 160
+        c.drawImage(img, 40, y_position - img_height, width=img_width, height=img_height)
+        y_position -= img_height + 20
 
-        if y_position < 40:  # Jika sudah mencapai bagian bawah halaman, buat halaman baru
+        if y_position < 100:
             c.showPage()
-            y_position = height - 40
+            y_position = height - 160
 
-    # Selesai menulis ke buffer
+    # Footer
+    c.setFont("Helvetica", 10)
+    c.drawString(40, 50, "Dokumen ini diterbitkan oleh ALus Diagnosa sebagai hasil analisis X-Ray.")
+    c.drawString(40, 35, "Untuk informasi lebih lanjut, silakan hubungi dokter Anda.")
+
     c.save()
     buffer.seek(0)
     return buffer
 
+
 # Fungsi untuk memproses file ZIP
 def process_zip_file(zip_file):
     results = []
-    with zipfile.ZipFile(zip_file) as z:
-        for file_name in z.namelist():
-            if file_name.endswith(('.jpg', '.jpeg', '.png')):
-                with z.open(file_name) as f:
-                    image = Image.open(f).convert('RGB')
-                    label, confidence = classify_image(image, model)
-                    results.append((file_name, label, confidence, image))
+    try:
+        with zipfile.ZipFile(zip_file) as z:
+            for file_name in z.namelist():
+                if file_name.endswith(('.jpg', '.jpeg', '.png')):
+                    with z.open(file_name) as f:
+                        image = Image.open(f).convert('RGB')
+                        label, confidence, predictions, categories = classify_image(image, model)
+                        if label is not None:
+                            results.append((file_name, label, confidence, image, predictions, categories))
+                else:
+                    st.warning(f"File {file_name} diabaikan karena bukan gambar.")
+                    logging.warning(f"File {file_name} diabaikan karena bukan gambar.")
+    except zipfile.BadZipFile:
+        st.error("File ZIP tidak valid atau rusak.")
+        logging.error("Bad ZIP file uploaded.")
+        return []
+    except Exception as e:
+        st.error(f"Kesalahan saat memproses file ZIP: {str(e)}")
+        logging.error(f"Error processing ZIP file: {str(e)}")
+        return []
+    
     return results
 
-# Navigasi sidebar
-menu = ["Beranda", "Klasifikasi", "Tentang"]
-choice = st.sidebar.selectbox("Navigasi", menu)
-
-if choice == "Beranda":
-    # Menampilkan judul dan deskripsi
-    st.markdown("""
-    <h1 style="text-align: center;">ALus</h1>
-    <h2 style="text-align: center;">Artificial Lungs Disease Detection</h2>
-    <p style="text-align: center;">Aplikasi klasifikasi gambar paru-paru berdasarkan model InceptionV3.</p>
-    """, unsafe_allow_html=True)
-
-    # Menampilkan gambar di bawah deskripsi
-    # st.image("Lung.jpg", use_column_width=True)
-
-    # Teks justify
-    st.markdown("""
-    <p style="text-align: justify; font-size: 18px;">
-        Kesehatan paru-paru sangat penting untuk kualitas hidup yang optimal. Penyakit paru seperti pneumonia dan infeksi akibat COVID-19 dapat
-        mempengaruhi fungsi paru dan menyebabkan gangguan pernapasan. Dengan kemajuan teknologi, deteksi dini melalui gambar X-ray
-        dapat membantu mendiagnosis penyakit paru lebih cepat dan lebih akurat.
-    </p>
-    <p style="text-align: justify; font-size: 18px;">
-        COVID-19, yang disebabkan oleh virus SARS-CoV-2, dapat menular melalui udara dan menyebabkan gangguan serius pada paru-paru.
-        Pneumonia adalah infeksi yang menyebabkan peradangan pada kantung udara di paru-paru, dan sering kali terkait dengan komplikasi
-        dari infeksi seperti COVID-19.
-    </p>
-    <p style="text-align: justify; font-size: 18px;">
-        ALus bertujuan untuk memberikan alat bantu dalam deteksi penyakit paru berdasarkan gambar X-ray, sehingga mempermudah diagnosis
-        dan perawatan lebih cepat.
-    </p>
-    """, unsafe_allow_html=True)
-
-elif choice == "Klasifikasi":
-    st.title("Klasifikasi Gambar Paru-Paru")
+def display_diagnosis():
+    st.title("Diagnosa Penyakit Paru-Paru dengan Mobilenetv2")
+    st.write("Gunakan aplikasi ini untuk menganalisis gambar X-Ray paru-paru dan mendeteksi penyakit terkait seperti COVID-19, Normal, atau Pneumonia.")
+    
     option = st.radio("Pilih metode unggah:", ["Unggah beberapa gambar", "Unggah file ZIP"])
 
     results = []
@@ -132,45 +217,42 @@ elif choice == "Klasifikasi":
         )
 
         if uploaded_files:
-            st.write("### Hasil Klasifikasi")
-            for uploaded_file in uploaded_files:
-                image = Image.open(uploaded_file).convert('RGB')
-                st.image(image, caption=f"Gambar: {uploaded_file.name}", use_container_width=True)
+            st.write("### Hasil Diagnosa")
+            if len(uploaded_files) > 20:
+                st.warning("Anda hanya dapat mengunggah maksimal 20 file sekaligus.")
+                return
 
-                label, confidence = classify_image(image, model)
-                st.write(f"**{uploaded_file.name}**: {label} ({confidence * 100:.2f}%)")
-                results.append((uploaded_file.name, label, confidence, image))
+            for uploaded_file in uploaded_files:
+                try:
+                    image = Image.open(uploaded_file).convert('RGB')
+                    st.image(image, caption=f"Gambar: {uploaded_file.name}", width=300)
+
+                    label, confidence, predictions, categories = classify_image(image, model)
+                    if label is not None:
+                        st.write(f"**{uploaded_file.name}**: {label} ({confidence * 100:.2f}%)")
+                        plot_prediction(image, predictions, categories)
+                        results.append((uploaded_file.name, label, confidence, image, predictions, categories))
+                    else:
+                        st.write(f"Kesalahan dalam klasifikasi gambar {uploaded_file.name}.")
+                except Exception as e:
+                    st.error(f"Terjadi kesalahan saat memproses gambar {uploaded_file.name}: {str(e)}")
+                    logging.error(f"Error processing image {uploaded_file.name}: {str(e)}")
 
     elif option == "Unggah file ZIP":
         zip_file = st.file_uploader("Unggah file ZIP berisi gambar", type=["zip"])
         if zip_file:
-            st.write("### Hasil Klasifikasi")
+            st.write("### Hasil Diagnosa")
             results = process_zip_file(zip_file)
-            for file_name, label, confidence, image in results:
-                st.image(image, caption=f"Gambar: {file_name}", use_column_width=True)
+            for file_name, label, confidence, image, predictions, categories in results:
+                st.image(image, caption=f"Gambar: {file_name}", width=300)
                 st.write(f"**{file_name}**: {label} ({confidence * 100:.2f}%)")
+                plot_prediction(image, predictions, categories)
 
-    # Menambahkan tombol untuk mengunduh PDF hasil
     if results:
         pdf_buffer = create_pdf_with_images(results)
         st.download_button(
-            label="Unduh Hasil Klasifikasi (PDF)",
+            label="Unduh Hasil Diagnosa (PDF)",
             data=pdf_buffer,
-            file_name="hasil_klasifikasi.pdf",
+            file_name="hasil_diagnosa.pdf",
             mime="application/pdf"
         )
-
-elif choice == "Tentang":
-    st.title("Tentang Aplikasi")
-    st.write("Aplikasi ini menggunakan model deep learning (InceptionV3) untuk mengklasifikasikan gambar X-ray paru-paru menjadi tiga kategori: COVID, Pneumonia, dan Normal.")
-    st.write("### Pengembang:")
-    st.markdown("- Wildan Miladji")
-    st.markdown("- Robert William")
-    st.markdown("- Rayhan Gading")
-    st.markdown("- Yahya Bachtiar")
-    st.markdown("- Siti Arwiyah")
-    st.write("### Fitur Utama:")
-    st.markdown("- **Klasifikasi gambar individu**: Unggah satu atau beberapa gambar X-ray untuk klasifikasi.")
-    st.markdown("- **Klasifikasi file ZIP**: Unggah file ZIP berisi banyak gambar untuk klasifikasi.")
-    st.markdown("- **Unduh hasil dalam PDF**: Hasil klasifikasi gambar dapat diunduh dalam bentuk PDF.")
-    st.markdown("- **Deep Learning Model**: Menggunakan model InceptionV3 yang sudah dilatih.")
