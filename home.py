@@ -6,7 +6,7 @@ def display_home():
     st.markdown("""
     <h1 style="text-align: center;">ALus</h1>
     <h2 style="text-align: center;">Artificial Lungs Disease Detection</h2>
-    <p style="text-align: center;">Aplikasi klasifikasi gambar paru-paru berdasarkan model MobileNetV2.</p>
+    <p style="text-align: center;">Aplikasi klasifikasi gambar paru-paru berdasarkan model InceptionV3.</p>
     """, unsafe_allow_html=True)
 
     # Mendapatkan path absolut untuk file gambar
