@@ -203,7 +203,7 @@ def process_zip_file(zip_file):
     return results
 
 def display_diagnosis():
-    st.title("Diagnosa Penyakit Paru-Paru dengan Mobilenetv2")
+    st.title("Diagnosa Penyakit Paru-Paru dengan InceptionV3")
     st.write("Gunakan aplikasi ini untuk menganalisis gambar X-Ray paru-paru dan mendeteksi penyakit terkait seperti COVID-19, Normal, atau Pneumonia.")
     
     option = st.radio("Pilih metode unggah:", ["Unggah beberapa gambar", "Unggah file ZIP"])
