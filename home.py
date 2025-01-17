@@ -40,7 +40,7 @@ def display_home():
     <p style="text-align: justify; font-size: 18px;">
         Dalam era modern ini, teknologi kecerdasan buatan (AI) memberikan solusi baru dalam bidang kesehatan. ALus adalah aplikasi berbasis 
         AI yang dirancang untuk membantu dokter dan profesional medis dalam menganalisis gambar X-ray paru-paru. Dengan menggunakan model 
-        MobileNetV2 yang canggih, aplikasi ini dapat mengklasifikasikan kondisi paru-paru menjadi tiga kategori utama: normal, pneumonia, 
+        InceptionV3 yang canggih, aplikasi ini dapat mengklasifikasikan kondisi paru-paru menjadi tiga kategori utama: normal, pneumonia, 
         dan COVID-19. Teknologi ini tidak hanya mempercepat proses diagnosis, tetapi juga meningkatkan akurasi dalam menentukan jenis 
         penyakit yang diderita oleh pasien.
     </p>
