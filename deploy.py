@@ -93,8 +93,8 @@ choice = st.sidebar.selectbox("Navigasi", menu)
 if choice == "Beranda":
     # Menampilkan judul dan deskripsi
     st.markdown("""
-    <h1 style="text-align: center;">ALus</h1>
-    <h2 style="text-align: center;">Artificial Lungs Disease Detection</h2>
+    <h1 style="text-align: center;">SHAFA</h1>
+    <h2 style="text-align: center;">Smart Healthcare AI for Lung Analysis</h2>
     <p style="text-align: center;">Aplikasi klasifikasi gambar paru-paru berdasarkan model InceptionV3.</p>
     """, unsafe_allow_html=True)
 
@@ -164,11 +164,9 @@ elif choice == "Tentang":
     st.title("Tentang Aplikasi")
     st.write("Aplikasi ini menggunakan model deep learning (InceptionV3) untuk mengklasifikasikan gambar X-ray paru-paru menjadi tiga kategori: COVID, Pneumonia, dan Normal.")
     st.write("### Pengembang:")
-    st.markdown("- Wildan Miladji")
-    st.markdown("- Robert William")
-    st.markdown("- Rayhan Gading")
-    st.markdown("- Yahya Bachtiar")
-    st.markdown("- Siti Arwiyah")
+    st.markdown("- Hector Alianzaputra")
+    st.markdown("- Yahya Bachtiar Ivansyah")
+    st.markdown("- Moh. Aldimas Arya Pranata")
     st.write("### Fitur Utama:")
     st.markdown("- **Klasifikasi gambar individu**: Unggah satu atau beberapa gambar X-ray untuk klasifikasi.")
     st.markdown("- **Klasifikasi file ZIP**: Unggah file ZIP berisi banyak gambar untuk klasifikasi.")
