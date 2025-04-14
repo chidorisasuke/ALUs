@@ -111,13 +111,13 @@ def create_pdf_with_images(results):
 
     # Header
     c.setFont("Helvetica-Bold", 16)
-    c.drawString(40, height - 50, "Hasil Medical Check-Up With ALus Diagnosa")
+    c.drawString(40, height - 50, "Hasil Medical Check-Up With SHAFA Diagnosa")
     c.setFont("Helvetica", 12)
     c.drawString(40, height - 70, f"Tanggal: {datetime.now().strftime('%d-%m-%Y')}")
 
     # Informasi Institusi
     c.setFont("Helvetica", 10)
-    c.drawString(40, height - 100, "ALus Diagnosa")
+    c.drawString(40, height - 100, "SHAFA Diagnosa")
     c.drawString(40, height - 115, "Jl. Kesehatan No. 123, Bandung")
     c.drawString(40, height - 130, "Telp: (021) 123-4567 | Email: info@rsxyz.co.id")
 
@@ -168,7 +168,7 @@ def create_pdf_with_images(results):
 
     # Footer
     c.setFont("Helvetica", 10)
-    c.drawString(40, 50, "Dokumen ini diterbitkan oleh ALus Diagnosa sebagai hasil analisis X-Ray.")
+    c.drawString(40, 50, "Dokumen ini diterbitkan oleh SHAFA Diagnosa sebagai hasil analisis X-Ray.")
     c.drawString(40, 35, "Untuk informasi lebih lanjut, silakan hubungi dokter Anda.")
 
     c.save()
