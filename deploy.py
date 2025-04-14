@@ -114,7 +114,7 @@ if choice == "Beranda":
         dari infeksi seperti COVID-19.
     </p>
     <p style="text-align: justify; font-size: 18px;">
-        ALus bertujuan untuk memberikan alat bantu dalam deteksi penyakit paru berdasarkan gambar X-ray, sehingga mempermudah diagnosis
+        SHAFA bertujuan untuk memberikan alat bantu dalam deteksi penyakit paru berdasarkan gambar X-ray, sehingga mempermudah diagnosis
         dan perawatan lebih cepat.
     </p>
     """, unsafe_allow_html=True)
