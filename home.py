@@ -4,8 +4,8 @@ import streamlit as st
 def display_home():
     # Menampilkan judul dan deskripsi
     st.markdown("""
-    <h1 style="text-align: center;">ALus</h1>
-    <h2 style="text-align: center;">Artificial Lungs Disease Detection</h2>
+    <h1 style="text-align: center;">SHAFA</h1>
+    <h2 style="text-align: center;">Smart Healthcare AI for Lung Analysis</h2>
     <p style="text-align: center;">Aplikasi klasifikasi gambar paru-paru berdasarkan model InceptionV3.</p>
     """, unsafe_allow_html=True)
 
@@ -45,7 +45,7 @@ def display_home():
         penyakit yang diderita oleh pasien.
     </p>
     <p style="text-align: justify; font-size: 18px;">
-        ALus bertujuan untuk menjadi alat bantu yang handal dalam mendiagnosis penyakit paru-paru secara cepat dan efisien. Dengan memanfaatkan 
+        SHAFA bertujuan untuk menjadi alat bantu yang handal dalam mendiagnosis penyakit paru-paru secara cepat dan efisien. Dengan memanfaatkan 
         data X-ray, algoritma yang digunakan dalam aplikasi ini mampu mendeteksi pola-pola yang mungkin sulit diidentifikasi oleh mata manusia. 
         Hal ini diharapkan dapat mendukung pengambilan keputusan medis yang lebih baik, memberikan peluang lebih besar untuk pemulihan pasien, 
         dan mengurangi beban kerja para tenaga medis.
