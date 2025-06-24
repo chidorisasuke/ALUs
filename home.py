@@ -11,7 +11,7 @@ def display_home():
 
     # Mendapatkan path absolut untuk file gambar
     current_dir = os.path.dirname(__file__)
-    image_path = os.path.join(current_dir, "Lung.png")
+    image_path = os.path.join(current_dir, "assets/Lung.png")
 
     # Memeriksa apakah file gambar ada
     if os.path.exists(image_path):
