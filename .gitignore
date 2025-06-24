@@ -20,3 +20,11 @@ Thumbs.db
 # Abaikan file yang dihasilkan oleh editor
 .vscode/
 .idea/
+
+# Abaikan file tes dan backup
+test_image.py
+*.old
+
+
+
+ 

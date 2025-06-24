@@ -8,22 +8,19 @@ def display_home():
     <h2 style="text-align: center;">Smart Healthcare AI for Lung Analysis</h2>
     <p style="text-align: center;">Aplikasi klasifikasi gambar paru-paru berdasarkan model InceptionV3.</p>
     """, unsafe_allow_html=True)
+    
+    # di dalam fungsi display_home() di home.py
+    # st.image("assets/Lung.png", use_container_width=True)
 
     # Mendapatkan path absolut untuk file gambar
-    image_path = "assets/Lung.png"
-    
-    # Streamlit akan secara otomatis mencari path ini dari direktori utama aplikasi Anda
-    # Tidak perlu lagi memeriksa dengan os.path.exists()
-    st.image(image_path, use_container_width=True)
-    
-    # current_dir = os.path.dirname(__file__)
-    # image_path = os.path.join(current_dir, "assets/Lung.png")
+    current_dir = os.path.dirname(__file__)
+    image_path = os.path.join(current_dir, "lung.png")
 
-    # # Memeriksa apakah file gambar ada
-    # if os.path.exists(image_path):
-    #     st.image(image_path, use_container_width=True)
-    # else:
-    #     st.error("Gambar tidak ditemukan. Pastikan file 'Lung.png' ada di folder yang benar.")
+    # Memeriksa apakah file gambar ada
+    if os.path.exists(image_path):
+        st.image(image_path, use_container_width=True)
+    else:
+        st.error("Gambar tidak ditemukan. Pastikan file 'Lung.png' ada di folder yang benar.")
 
     # Teks justify
     st.markdown("""
