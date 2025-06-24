@@ -1,6 +1,6 @@
 # requirements.txt (Versi Baru, Minimalis, dan Cross-Platform)
 
-streamlit==1.35.0
+streamlit==1.46.0
 tensorflow-cpu==2.15.0
 langchain-google-genai
 langchain-community
@@ -10,3 +10,4 @@ Pillow
 reportlab
 matplotlib
 seaborn
+h5py
