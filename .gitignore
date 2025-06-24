@@ -1,0 +1,22 @@
+# .gitignore
+
+# Abaikan folder Virtual Environment
+chatbot_env/
+venv/
+.venv/
+
+# Abaikan file environment rahasia
+.env
+
+# Abaikan cache Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Abaikan file sistem operasi
+.DS_Store
+Thumbs.db
+
+# Abaikan file yang dihasilkan oleh editor
+.vscode/
+.idea/
