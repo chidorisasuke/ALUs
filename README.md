@@ -9,8 +9,8 @@
 
 🔗 **[Lihat Aplikasi Langsung](https://shafa-web.streamlit.app)**
 
-> *(Ganti gambar di bawah ini dengan screenshot aplikasimu sendiri)*
-> ![Preview](https://via.placeholder.com/800x400.png?text=SHAFA+App+Preview)
+> 
+> ![Preview](https://github.com/chidorisasuke/ALUs/blob/shafa/lung.png)
 
 ---
 
