@@ -10,14 +10,20 @@ def display_home():
     """, unsafe_allow_html=True)
 
     # Mendapatkan path absolut untuk file gambar
-    current_dir = os.path.dirname(__file__)
-    image_path = os.path.join(current_dir, "assets/Lung.png")
+    image_path = "assets/Lung.png"
+    
+    # Streamlit akan secara otomatis mencari path ini dari direktori utama aplikasi Anda
+    # Tidak perlu lagi memeriksa dengan os.path.exists()
+    st.image(image_path, use_container_width=True)
+    
+    # current_dir = os.path.dirname(__file__)
+    # image_path = os.path.join(current_dir, "assets/Lung.png")
 
-    # Memeriksa apakah file gambar ada
-    if os.path.exists(image_path):
-        st.image(image_path, use_container_width=True)
-    else:
-        st.error("Gambar tidak ditemukan. Pastikan file 'Lung.png' ada di folder yang benar.")
+    # # Memeriksa apakah file gambar ada
+    # if os.path.exists(image_path):
+    #     st.image(image_path, use_container_width=True)
+    # else:
+    #     st.error("Gambar tidak ditemukan. Pastikan file 'Lung.png' ada di folder yang benar.")
 
     # Teks justify
     st.markdown("""
