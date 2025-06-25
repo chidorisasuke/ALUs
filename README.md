@@ -103,6 +103,6 @@ streamlit run app.py
 
 ## 👥 Kontributor
 
-* **Hector Alianzaputra**
 * **Yahya Bachtiar Ivansyah**
+* **Hector Alianzaputra**
 * **Moh. Aldimas Arya Pranata**
