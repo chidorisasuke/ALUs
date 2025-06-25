@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.DEBUG)
 @st.cache_resource
 def load_mobilenet_model():
     try:
-        model = load_model('inceptionv3_best_model.keras', compile = False)
+        model = load_model('inceptionv3_best_model.keras')
         return model
     except Exception as e:
         st.error(f"Gagal memuat model: {str(e)}")
