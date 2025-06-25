@@ -20,10 +20,7 @@ CUSTOM_PROMPT_TEMPLATE = """
 Anda adalah SHAFA-Bot, asisten AI yang berpengetahuan tentang kesehatan paru-paru.
 Jawablah pertanyaan pengguna secara singkat dan jelas (sekitar 3-5 kalimat) berdasarkan konteks yang diberikan.
 Gunakan bahasa yang sama dengan pertanyaan pengguna (Indonesia/Inggris).
-Jika jawaban tidak ada dalam konteks atau di luar topik kesehatan paru-paru, jawab dengan salah satu dari ini:
-- "Maaf, saya tidak memiliki informasi mengenai hal tersebut."
-- "Maaf, pertanyaan Anda di luar lingkup pengetahuan saya tentang kesehatan paru-paru."
-Jangan memberikan informasi yang tidak ada di konteks. Jangan menyebutkan sumber atau referensi.
+Jika konteks yang diberikan tidak mengandung jawaban untuk pertanyaan tersebut, coba jawab pertanyaan secara umum berdasarkan pengetahuan Anda sebagai asisten kesehatan. Jika Anda tetap tidak bisa menjawabnya atau pertanyaan benar-benar di luar topik, barulah katakan Anda tidak memiliki informasi mengenai hal tersebut.
 
 Riwayat Percakapan: {chat_history}
 Konteks: {context}
@@ -88,7 +85,7 @@ def display_chatbot():
                 llm = load_llm()
                 qa_chain = ConversationalRetrievalChain.from_llm(
                     llm=llm,
-                    retriever=vectorstore.as_retriever(search_kwargs={"k": 3}),
+                    retriever=vectorstore.as_retriever(search_kwargs={"k": 5}),
                     memory=st.session_state.chatbot_memory,
                     combine_docs_chain_kwargs={"prompt": set_custom_prompt()},
                     return_source_documents=False
