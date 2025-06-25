@@ -1,7 +1,8 @@
-# requirements.txt (Versi Baru, Minimalis, dan Cross-Platform)
+# requirements.txt (Versi Final dengan TF 2.16 dan Keras 3)
 
 streamlit==1.46.0
-tensorflow-cpu==2.15.0
+tensorflow==2.16.1
+keras==3.3.3
 langchain-google-genai
 langchain-community
 faiss-cpu
